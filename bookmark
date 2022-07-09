@@ -114,7 +114,17 @@ clear_bookmarks () {
 }
 
 show_help () {
-	echo "a"
+	echo -e "*** CLI Bookmark ***\n"
+
+	echo -e "Usage: bookmark <command>\n"
+
+	echo "commands:"
+	echo "list 		lists all saved bookmarks"
+	echo "search b 	search for bookmark <b>"
+	echo "save b c 	saves a bookmark <b> with command <c>"
+	echo "exec b		executes the command saved in the bookmark <b>"
+	echo "remove b 	removes a bookmark <b>"
+	echo "clear 		removes ALL bookmarks"
 }
 
 case $1 in
@@ -140,6 +150,10 @@ case $1 in
 
 	clear)
 		clear_bookmarks
+		;;
+
+	help)
+		show_help
 		;;
 
 	*)
