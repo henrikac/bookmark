@@ -18,6 +18,12 @@ list_bookmarks () {
 }
 
 save_bookmark () {
+	if [ -z "$1" ] || [ -z "$2" ]; then
+		echo "missing arguments"
+		echo "bookmark save <name> <command>"
+		exit 1
+	fi
+
 	if [ ! -f $BOOKMARKS_FILE ]; then
 		echo "{}" > $BOOKMARKS_FILE
 	fi
