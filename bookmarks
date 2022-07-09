@@ -83,7 +83,20 @@ save_bookmark () {
 }
 
 remove_bookmark () {
-	echo "a"
+	if [ -z "$1" ]; then
+		echo "missing argument"
+		echo "bookmark remove <bookmark>"
+		exit 1
+	fi
+
+	cmd=$(echo $(<$BOOKMARKS_FILE) | jq -r ".$1")
+
+	if [[ $cmd != $(search_bookmark $1) ]]; then
+		echo "You have no saved bookmark: \"$1\""
+		exit 1
+	fi
+
+	echo $(jq "del(.$1)" $BOOKMARKS_FILE) > $BOOKMARKS_FILE
 }
 
 clear_bookmarks () {
@@ -122,7 +135,7 @@ case $1 in
 		;;
 
 	remove)
-		remove_bookmark
+		remove_bookmark $2
 		;;
 
 	clear)
