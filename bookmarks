@@ -17,6 +17,26 @@ list_bookmarks () {
 	echo $(<$BOOKMARKS_FILE) | jq .
 }
 
+search_bookmark () {
+	if [ ! -f $BOOKMARKS_FILE ]; then
+		echo "You have no saved bookmarks"
+		exit 0
+	fi
+
+	if [ -z "$1" ]; then
+		echo "missing argument"
+		echo "bookmark search <bookmark>"
+		exit 1
+	fi
+
+	if [[ $(echo $(<$BOOKMARKS_FILE) | jq ".$1") == null ]]; then
+		echo "You have no saved bookmark: \"$1\""
+		exit 0
+	fi
+
+	echo $(<$BOOKMARKS_FILE) | jq -r ".$1"
+}
+
 save_bookmark () {
 	if [ -z "$1" ] || [ -z "$2" ]; then
 		echo "missing arguments"
@@ -70,6 +90,10 @@ show_help () {
 case $1 in
 	list)
 		list_bookmarks
+		;;
+
+	search)
+		search_bookmark $2
 		;;
 
 	save)
