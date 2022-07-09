@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+
+if ! command -v jq &> /dev/null
+then
+	echo "could not find jq"
+	exit 1
+fi
+
+BOOKMARKS_FILE="$HOME/.bookmarks.json"
+
+list_bookmarks () {
+	if [ ! -f $BOOKMARKS_FILE ] || [ $(echo $(<$BOOKMARKS_FILE) | jq length) -eq 0 ]; then
+		echo "You have no saved bookmarks"
+		exit 0
+	fi
+
+	echo $(<$BOOKMARKS_FILE) | jq .
+}
+
+save_bookmark () {
+	if [ ! -f $BOOKMARKS_FILE ]; then
+		echo "{}" > $BOOKMARKS_FILE
+	fi
+
+	updated_bookmarks=$(jq --argjson addobj "{\"$1\": \"$2\"}" '. + $addobj' $BOOKMARKS_FILE)
+
+	if [[ $(echo $(<$BOOKMARKS_FILE) | jq ".$1") == null ]]; then
+		echo $updated_bookmarks | jq . > $BOOKMARKS_FILE
+		echo "Bookmark \"$1\" was saved successfully!"
+	else
+		read -p "You already have a bookmark \"$1\" - override (y/N)? " INPUT
+
+		if [[ $INPUT != "y" ]] && [[ $INPUT != "Y" ]]; then
+			exit 0
+		fi
+
+		echo $updated_bookmarks | jq . > $BOOKMARKS_FILE
+		echo "\"$1\" has been updated successfully!"
+	fi
+}
+
+remove_bookmark () {
+	echo "a"
+}
+
+clear_bookmarks () {
+	read -p "Are you sure that you want to clear your bookmarks (y/N)? " INPUT
+
+	if [[ $INPUT != "y" ]] && [[ $INPUT != "Y" ]]; then
+		exit 0
+	fi
+
+	if [ -f $BOOKMARKS_FILE ]; then
+		rm $BOOKMARKS_FILE
+	fi
+
+	echo "bookmarks cleared successfully"
+}
+
+show_help () {
+	echo "a"
+}
+
+case $1 in
+	list)
+		list_bookmarks
+		;;
+
+	save)
+		save_bookmark $2 "${*:3}"
+		;;
+
+	remove)
+		remove_bookmark
+		;;
+
+	clear)
+		clear_bookmarks
+		;;
+
+	*)
+		show_help
+		;;
+esac
+
