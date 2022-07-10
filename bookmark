@@ -22,6 +22,7 @@ then
 fi
 
 BOOKMARKS_FILE="$HOME/.bookmarks.json"
+SCRIPT_NAME=$(basename $0)
 
 list_bookmarks () {
 	if [ ! -f $BOOKMARKS_FILE ] || [ $(echo $(<$BOOKMARKS_FILE) | jq length) -eq 0 ]; then
@@ -35,7 +36,7 @@ list_bookmarks () {
 search_bookmark () {
 	if [ -z "$1" ]; then
 		echo "missing argument"
-		echo "bookmark search <bookmark>"
+		echo "$SCRIPT_NAME search <bookmark>"
 		exit 1
 	fi
 
@@ -55,7 +56,7 @@ search_bookmark () {
 exec_bookmark_command () {
 	if [ -z "$1" ]; then
 		echo "missing argument"
-		echo "bookmark exec <bookmark>"
+		echo "$SCRIPT_NAME exec <bookmark>"
 		exit 1
 	fi
 
@@ -72,7 +73,7 @@ exec_bookmark_command () {
 save_bookmark () {
 	if [ -z "$1" ] || [ -z "$2" ]; then
 		echo "missing arguments"
-		echo "bookmark save <name> <command>"
+		echo "$SCRIPT_NAME save <name> <command>"
 		exit 1
 	fi
 
@@ -100,7 +101,7 @@ save_bookmark () {
 remove_bookmark () {
 	if [ -z "$1" ]; then
 		echo "missing argument"
-		echo "bookmark remove <bookmark>"
+		echo "$SCRIPT_NAME remove <bookmark>"
 		exit 1
 	fi
 
@@ -131,7 +132,7 @@ clear_bookmarks () {
 show_help () {
 	echo -e "*** CLI Bookmark ***\n"
 
-	echo -e "Usage: bookmark <command>\n"
+	echo -e "Usage: $SCRIPT_NAME <command>\n"
 
 	echo "commands:"
 	echo "list 		lists all saved bookmarks"
