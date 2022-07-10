@@ -3,6 +3,17 @@
 ## Requirements
 - [jq](https://stedolan.github.io/jq/)
 
+## Installation
+To install `cli-bookmark` simply run
+```
+$ ./install
+```
+This will install `bookmark` in `$HOME/.local/bin`.
+To test that it was successfully installed run
+```
+$ bm
+```
+
 ## Usage
 Bookmarks are stored in `$HOME/.bookmarks.json`.
 
