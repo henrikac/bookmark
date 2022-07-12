@@ -13,16 +13,25 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package main
+package cmd_test
 
 import (
-	"os"
+	"bytes"
 
 	"github.com/henrikac/cli-bookmark/cmd"
 )
 
-func main() {
-	if err := cmd.Execute(); err != nil {
-		os.Exit(1)
-	}
+func ExampleNewVersionCmd() {
+	root := cmd.NewRootCmd()
+	version := cmd.NewVersionCmd()
+	root.AddCommand(version)
+
+	buff := bytes.NewBufferString("")
+
+	root.SetOut(buff)
+	root.SetArgs([]string{"version"})
+	root.Execute()
+
+	// Output:
+	// v1.0.0
 }

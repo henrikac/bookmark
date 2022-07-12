@@ -13,16 +13,26 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package main
+package cmd
 
 import (
-	"os"
+	"fmt"
 
-	"github.com/henrikac/cli-bookmark/cmd"
+	"github.com/spf13/cobra"
 )
 
-func main() {
-	if err := cmd.Execute(); err != nil {
-		os.Exit(1)
+var versionCmd = NewVersionCmd()
+
+func NewVersionCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "version",
+		Short: "Print the version of bookmark",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println("v1.0.0")
+		},
 	}
+}
+
+func init() {
+	rootCmd.AddCommand(versionCmd)
 }

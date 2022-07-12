@@ -13,16 +13,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package main
+package cmd
 
-import (
-	"os"
+import "github.com/spf13/cobra"
 
-	"github.com/henrikac/cli-bookmark/cmd"
-)
+var rootCmd = NewRootCmd()
 
-func main() {
-	if err := cmd.Execute(); err != nil {
-		os.Exit(1)
+func NewRootCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "bookmark",
+		Short: "A CLI Bookmarker",
 	}
+}
+
+func Execute() error {
+	return rootCmd.Execute()
 }
