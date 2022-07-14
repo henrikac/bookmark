@@ -27,6 +27,8 @@ import (
 var (
 	// configPath is the path to where configurations are stored.
 	configPath string
+	storePath  string
+	store      BookmarkStore
 	rootCmd    = NewRootCmd()
 )
 
@@ -42,30 +44,68 @@ func Execute() error {
 	if err != nil {
 		return err
 	}
-	configPath = filepath.Join(configDir, "bookmark")
-	if _, err := os.Stat(configPath); errors.Is(err, os.ErrNotExist) {
-		err = os.Mkdir(configPath, 0777)
+	configFolderPath := filepath.Join(configDir, "bookmark")
+	if _, err := os.Stat(configFolderPath); errors.Is(err, os.ErrNotExist) {
+		err = os.Mkdir(configFolderPath, 0777)
 		if err != nil {
 			return err
 		}
-		homeDir, err := os.UserHomeDir()
+	}
+	configFilePath := filepath.Join(configDir, "bookmark", "config.json")
+	if _, err = os.Stat(configFilePath); errors.Is(err, os.ErrNotExist) {
+		err = createConfigFile(configFilePath)
 		if err != nil {
 			return err
 		}
-		config := Config{
-			Store: filepath.Join(homeDir, "bookmarks.json"),
-		}
-		b, err := json.Marshal(config)
-		if err != nil {
-			return err
-		}
-		configPath = filepath.Join(configPath, "config.json")
-		err = os.WriteFile(configPath, b, 0666)
-		if err != nil {
-			return err
-		}
-	} else {
-		configPath = filepath.Join(configPath, "config.json")
+	}
+	configPath = configFilePath
+	store, err = loadBookmarkStore()
+	if err != nil {
+		return err
 	}
 	return rootCmd.Execute()
+}
+
+func createConfigFile(filename string) error {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return err
+	}
+	config := Config{
+		Store: filepath.Join(homeDir, ".bookmarks.json"),
+	}
+	b, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(filename, b, 0666)
+}
+
+func loadBookmarkStore() (BookmarkStore, error) {
+	if _, err := os.Stat(configPath); errors.Is(err, os.ErrNotExist) {
+		return nil, err
+	}
+	data, err := os.ReadFile(configPath)
+	if err != nil {
+		return nil, err
+	}
+	var config Config
+	err = json.Unmarshal(data, &config)
+	if err != nil {
+		return nil, err
+	}
+	storePath = config.Store
+	if _, err := os.Stat(storePath); errors.Is(err, os.ErrNotExist) {
+		return BookmarkStore{}, nil
+	}
+	store, err := os.ReadFile(storePath)
+	if err != nil {
+		return nil, err
+	}
+	var bookmarks BookmarkStore
+	err = json.Unmarshal(store, &bookmarks)
+	if err != nil {
+		return nil, err
+	}
+	return bookmarks, nil
 }
