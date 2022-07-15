@@ -18,7 +18,7 @@ package main
 import (
 	"os"
 
-	"github.com/henrikac/cli-bookmark/cmd"
+	"github.com/henrikac/bookmark/cmd"
 )
 
 func main() {

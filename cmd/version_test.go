@@ -18,7 +18,7 @@ package cmd_test
 import (
 	"bytes"
 
-	"github.com/henrikac/cli-bookmark/cmd"
+	"github.com/henrikac/bookmark/cmd"
 )
 
 func ExampleNewVersionCmd() {
