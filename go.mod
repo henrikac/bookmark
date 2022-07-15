@@ -1,4 +1,4 @@
-module github.com/henrikac/cli-bookmark
+module github.com/henrikac/bookmark
 
 go 1.18
 
