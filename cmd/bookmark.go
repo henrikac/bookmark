@@ -88,11 +88,6 @@ func NewBookmarkExecCmd() *cobra.Command {
 				return nil
 			}
 			bookmarkCmdArr := splitOnSpace(store[bookmark])
-			fmt.Println(bookmarkCmdArr)
-			fmt.Println(len(bookmarkCmdArr))
-			for i, item := range bookmarkCmdArr {
-				fmt.Printf("%d - %s\n", i, item)
-			}
 			var command *exec.Cmd
 			if len(bookmarkCmdArr) == 1 {
 				command = exec.Command(bookmarkCmdArr[0])
