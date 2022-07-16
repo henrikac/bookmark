@@ -2,6 +2,8 @@ module github.com/henrikac/bookmark
 
 go 1.18
 
+retract v1.0.0 // broken
+
 require github.com/spf13/cobra v1.5.0
 
 require (
