@@ -23,6 +23,7 @@ import (
 
 var versionCmd = NewVersionCmd()
 
+// NewVersionCmd initializes a new version command.
 func NewVersionCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "version",

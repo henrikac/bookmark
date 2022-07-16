@@ -27,11 +27,14 @@ import (
 var (
 	// configPath is the path to where configurations are stored.
 	configPath string
-	storePath  string
-	store      BookmarkStore
-	rootCmd    = NewRootCmd()
+	// storePath is the path to where bookmarks are stored.
+	storePath string
+	// store is a map of stored bookmarks.
+	store   BookmarkStore
+	rootCmd = NewRootCmd()
 )
 
+// NewRootCmd initializes a new root command.
 func NewRootCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "bookmark",
@@ -39,6 +42,9 @@ func NewRootCmd() *cobra.Command {
 	}
 }
 
+// Execute checks whether the config folder and the config file exists
+// and if they does not they will be created. Execute then loads the users
+// bookmarks and then execute the root command.
 func Execute() error {
 	configDir, err := os.UserConfigDir()
 	if err != nil {
@@ -66,6 +72,7 @@ func Execute() error {
 	return rootCmd.Execute()
 }
 
+// createConfigFile creates a new config file with default values.
 func createConfigFile(filename string) error {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -81,6 +88,7 @@ func createConfigFile(filename string) error {
 	return os.WriteFile(filename, b, 0666)
 }
 
+// loadBookmarkStore loads the user's bookmarks.
 func loadBookmarkStore() (BookmarkStore, error) {
 	if _, err := os.Stat(configPath); errors.Is(err, os.ErrNotExist) {
 		return nil, err

@@ -25,6 +25,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// BookmarkStore is a collection of the user's bookmarks.
 type BookmarkStore = map[string]string
 
 var (
@@ -35,6 +36,7 @@ var (
 	bookmarkSearchCmd = NewBookmarkSearchCmd()
 )
 
+// NewBookmarkAddCmd initializes a new add command.
 func NewBookmarkAddCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "add",
@@ -69,6 +71,7 @@ func NewBookmarkAddCmd() *cobra.Command {
 	}
 }
 
+// NewBookmarkExecCmd initializes a new exec command.
 func NewBookmarkExecCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "exec",
@@ -103,6 +106,7 @@ func NewBookmarkExecCmd() *cobra.Command {
 	}
 }
 
+// NewBookmarkListCmd initializes a new list command.
 func NewBookmarkListCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "list",
@@ -124,6 +128,7 @@ func NewBookmarkListCmd() *cobra.Command {
 	}
 }
 
+// NewBookmarkRemoveCmd initializes a new remove command.
 func NewBookmarkRemoveCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "remove",
@@ -155,6 +160,7 @@ func NewBookmarkRemoveCmd() *cobra.Command {
 	}
 }
 
+// NewBookmarkSearchCmd initializes a new search command.
 func NewBookmarkSearchCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "search",

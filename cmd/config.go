@@ -35,6 +35,7 @@ var (
 	configListCmd = NewConfigListCmd()
 )
 
+// NewConfigCmd initializes a new config command.
 func NewConfigCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "config",
@@ -42,6 +43,7 @@ func NewConfigCmd() *cobra.Command {
 	}
 }
 
+// NewConfigListCmd initializes a new config list command.
 func NewConfigListCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "list",
