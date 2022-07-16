@@ -3,7 +3,7 @@
 A bookmarker for your terminal.
 
 ## Installation
-Run `go install github.com/henrikac/bookmark`.
+Run `go install github.com/henrikac/bookmark@latest`.
 
 ## Usage
 #### Add bookmark
