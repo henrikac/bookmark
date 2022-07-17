@@ -27,7 +27,7 @@ import (
 
 // A Config describes a user's bookmark configurations.
 type Config struct {
-	// Store specifies the path to where the user's bookmarks are stored.
+	// StorePath specifies the path to where the user's bookmarks are stored.
 	StorePath string `json:"storePath"`
 }
 
