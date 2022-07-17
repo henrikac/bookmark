@@ -22,12 +22,13 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // A Config describes a user's bookmark configurations.
 type Config struct {
 	// Store specifies the path to where the user's bookmarks are stored.
-	Store string `json:"store"`
+	StorePath string `json:"storePath"`
 }
 
 var (
@@ -50,6 +51,7 @@ func NewConfigListCmd() *cobra.Command {
 		Short: "List all your bookmark configurations",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			configPath := viper.GetViper().ConfigFileUsed()
 			data, err := os.ReadFile(configPath)
 			if err != nil {
 				return err
