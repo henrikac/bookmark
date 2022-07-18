@@ -33,5 +33,5 @@ func ExampleNewVersionCmd() {
 	root.Execute()
 
 	// Output:
-	// v1.0.3
+	// v1.1.0
 }
