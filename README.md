@@ -43,3 +43,15 @@ $ bookmark remove <bookmark>
 ```
 This will remove `<bookmark>` if it exists.
 
+#### List configurations
+```
+$ bookmark config list
+``'
+THis will list all the configurations.
+
+#### Update configuration
+```
+$ bookmark config set storePath ~/.config/bookmark/
+```
+This will set the `storePath` to `~/.config/bookmark/bookmarks.json`.
+If the last part of the given path is a folder like in the example above then it ***MUST*** end with a `/`.
