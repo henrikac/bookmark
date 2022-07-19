@@ -46,7 +46,7 @@ This will remove `<bookmark>` if it exists.
 #### List configurations
 ```
 $ bookmark config list
-``'
+```
 THis will list all the configurations.
 
 #### Update configuration
