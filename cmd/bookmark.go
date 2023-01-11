@@ -31,15 +31,15 @@ import (
 type BookmarkStore = map[string]string
 
 var (
-	bookmarkAddCmd    = NewBookmarkAddCmd()
-	bookmarkExecCmd   = NewBookmarkExecCmd()
-	bookmarkListCmd   = NewBookmarkListCmd()
-	bookmarkRemoveCmd = NewBookmarkRemoveCmd()
-	bookmarkSearchCmd = NewBookmarkSearchCmd()
+	bookmarkAddCmd    = BookmarkAddCmd()
+	bookmarkExecCmd   = BookmarkExecCmd()
+	bookmarkListCmd   = BookmarkListCmd()
+	bookmarkRemoveCmd = BookmarkRemoveCmd()
+	bookmarkSearchCmd = BookmarkSearchCmd()
 )
 
-// NewBookmarkAddCmd initializes a new add command.
-func NewBookmarkAddCmd() *cobra.Command {
+// BookmarkAddCmd initializes a new add command.
+func BookmarkAddCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "add",
 		Short: "Add a new bookmark",
@@ -77,8 +77,8 @@ func NewBookmarkAddCmd() *cobra.Command {
 	}
 }
 
-// NewBookmarkExecCmd initializes a new exec command.
-func NewBookmarkExecCmd() *cobra.Command {
+// BookmarkExecCmd initializes a new exec command.
+func BookmarkExecCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "exec",
 		Short: "Execute a bookmark",
@@ -111,8 +111,8 @@ func NewBookmarkExecCmd() *cobra.Command {
 	}
 }
 
-// NewBookmarkListCmd initializes a new list command.
-func NewBookmarkListCmd() *cobra.Command {
+// BookmarkListCmd initializes a new list command.
+func BookmarkListCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "list",
 		Short: "List your current saved bookmarks",
@@ -137,8 +137,8 @@ func NewBookmarkListCmd() *cobra.Command {
 	}
 }
 
-// NewBookmarkRemoveCmd initializes a new remove command.
-func NewBookmarkRemoveCmd() *cobra.Command {
+// BookmarkRemoveCmd initializes a new remove command.
+func BookmarkRemoveCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "remove",
 		Short: "Remove a bookmark",
@@ -173,8 +173,8 @@ func NewBookmarkRemoveCmd() *cobra.Command {
 	}
 }
 
-// NewBookmarkSearchCmd initializes a new search command.
-func NewBookmarkSearchCmd() *cobra.Command {
+// BookmarkSearchCmd initializes a new search command.
+func BookmarkSearchCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "search",
 		Short: "seach for a bookmark",
