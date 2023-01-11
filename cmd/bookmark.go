@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -99,10 +100,21 @@ func BookmarkExecCmd() *cobra.Command {
 			}
 			bookmarkCmdArr := splitOnSpace(store[bookmark])
 			var command *exec.Cmd
+			cmdAndArgs := ``
 			if len(bookmarkCmdArr) == 1 {
-				command = exec.Command(bookmarkCmdArr[0])
+				cmdAndArgs += bookmarkCmdArr[0]
 			} else {
-				command = exec.Command(bookmarkCmdArr[0], bookmarkCmdArr[1:]...)
+				for i, part := range bookmarkCmdArr {
+					if i > 0 {
+						cmdAndArgs += " "
+					}
+					cmdAndArgs += part
+				}
+			}
+			if runtime.GOOS == "windows" {
+				command = exec.Command("cmd", "/c", cmdAndArgs)
+			} else {
+				command = exec.Command("bash", "-c", cmdAndArgs)
 			}
 			command.Stdout = os.Stdout
 			command.Stderr = os.Stderr
