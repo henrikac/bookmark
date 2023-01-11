@@ -119,7 +119,6 @@ func NewConfigSetCmd() *cobra.Command {
 			default:
 				return fmt.Errorf("unable to find the given config: \"%s\"", args[0])
 			}
-			return nil
 		},
 	}
 }
