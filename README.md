@@ -8,15 +8,19 @@ Run `go install github.com/henrikac/bookmark@latest`.
 ## Usage
 #### Add bookmark
 ```
-$ bookmark add speak echo \"hello world\"
+$ bookmark add speak echo "hello world"
 ```
-This will bookmark `speak` with the command `echo \"hello world\"`.
+This will bookmark `speak` with the command `echo hello world`.
 
 *Notes*:
 - if you want to use quotes you need to escape them.
 - if your command contains flags e.g. `-h` you need to add `--` between the bookmark name and the command
 ```
-$ bookmark add du -- docker compose up -d
+$ bookmark add ls -- ls -al
+```
+- if your command contains e.g. `|` or `>` you need to wrap the entire command in quotes
+```
+$ bookmark add hello "echo \"Hello world\" > /some/path/hello.txt"
 ```
 
 #### List bookmarks
