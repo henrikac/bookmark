@@ -57,7 +57,7 @@ func BookmarkAddCmd() *cobra.Command {
 				var input string
 				fmt.Printf("Do you want to override it (y/N)? ")
 				_, _ = fmt.Scanln(&input)
-				if strings.ToLower(input) == "y" {
+				if strings.ToLower(strings.TrimSpace(input)) == "y" {
 					store[bookmark] = bookmarkCmd
 					err := updateStore(store)
 					if err != nil {
@@ -100,15 +100,10 @@ func BookmarkExecCmd() *cobra.Command {
 			}
 			bookmarkCmdArr := splitOnSpace(store[bookmark])
 			var command *exec.Cmd
-			cmdAndArgs := ``
-			if len(bookmarkCmdArr) == 1 {
-				cmdAndArgs += bookmarkCmdArr[0]
-			} else {
-				for i, part := range bookmarkCmdArr {
-					if i > 0 {
-						cmdAndArgs += " "
-					}
-					cmdAndArgs += part
+			cmdAndArgs := bookmarkCmdArr[0]
+			if len(bookmarkCmdArr) > 1 {
+				for _, part := range bookmarkCmdArr[1:] {
+					cmdAndArgs += fmt.Sprintf(" %s", part)
 				}
 			}
 			if runtime.GOOS == "windows" {
@@ -172,7 +167,7 @@ func BookmarkRemoveCmd() *cobra.Command {
 			var input string
 			fmt.Printf("Are you sure you want to remove \"%s\" (y/N)? ", bookmark)
 			_, _ = fmt.Scanln(&input)
-			if strings.ToLower(input) == "y" {
+			if strings.ToLower(strings.TrimSpace(input)) == "y" {
 				delete(store, bookmark)
 				err := updateStore(store)
 				if err != nil {
