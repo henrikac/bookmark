@@ -16,89 +16,88 @@
 package cmd
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
 	"os"
 	"os/exec"
 	"runtime"
 	"strings"
 
+	"github.com/henrikac/bookmark/internal/store"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // BookmarkStore is a collection of the user's bookmarks.
-type BookmarkStore = map[string]string
+// type BookmarkStore = map[string]string
 
 var (
-	bookmarkAddCmd    = BookmarkAddCmd()
-	bookmarkExecCmd   = BookmarkExecCmd()
-	bookmarkListCmd   = BookmarkListCmd()
-	bookmarkRemoveCmd = BookmarkRemoveCmd()
-	bookmarkSearchCmd = BookmarkSearchCmd()
+	bookmarkStore     = store.NewBookmarkFileStore()
+	bookmarkAddCmd    = BookmarkAddCmd(bookmarkStore)
+	bookmarkExecCmd   = BookmarkExecCmd(bookmarkStore)
+	bookmarkListCmd   = BookmarkListCmd(bookmarkStore)
+	bookmarkRemoveCmd = BookmarkRemoveCmd(bookmarkStore)
+	bookmarkSearchCmd = BookmarkSearchCmd(bookmarkStore)
 )
 
 // BookmarkAddCmd initializes a new add command.
-func BookmarkAddCmd() *cobra.Command {
+func BookmarkAddCmd(bs store.BookmarkStoreLoadUpdater) *cobra.Command {
 	return &cobra.Command{
 		Use:   "add",
 		Short: "Add a new bookmark",
 		Args:  cobra.MinimumNArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			bookmark := args[0]
+			name := args[0]
 			bookmarkCmd := strings.Join(args[1:], " ")
-			store, err := loadBookmarkStore()
+			bookmarks, err := bs.Load()
 			if err != nil {
 				return err
 			}
-			if val, found := store[bookmark]; found {
-				fmt.Printf("%s already exists: %s\n", bookmark, val)
+			if val, found := bookmarks[name]; found {
+				fmt.Printf("%s already exists: %s\n", name, val)
 				var input string
 				fmt.Printf("Do you want to override it (y/N)? ")
 				_, _ = fmt.Scanln(&input)
 				if strings.ToLower(strings.TrimSpace(input)) == "y" {
-					store[bookmark] = bookmarkCmd
-					err := updateStore(store)
+					bookmarks[name] = bookmarkCmd
+					err := bs.Update(bookmarks)
 					if err != nil {
 						return err
 					}
-					fmt.Printf("Bookmark \"%s\" has been updated successfully!\n", bookmark)
+					fmt.Printf("Bookmark \"%s\" has been updated successfully!\n", name)
 				}
 				return nil
 			}
-			store[bookmark] = bookmarkCmd
-			err = updateStore(store)
+			bookmarks[name] = bookmarkCmd
+			err = bs.Update(bookmarks)
 			if err != nil {
 				return err
 			}
-			fmt.Printf("New bookmark \"%s\" has been added successfully!\n", bookmark)
+			fmt.Printf("New bookmark \"%s\" has been added successfully!\n", name)
 			return nil
 		},
 	}
 }
 
 // BookmarkExecCmd initializes a new exec command.
-func BookmarkExecCmd() *cobra.Command {
+func BookmarkExecCmd(bs store.BookmarkStoreLoader) *cobra.Command {
 	return &cobra.Command{
 		Use:   "exec",
 		Short: "Execute a bookmark",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			store, err := loadBookmarkStore()
+			bookmarks, err := bs.Load()
 			if err != nil {
 				return err
 			}
-			if len(store) == 0 {
+			if len(bookmarks) == 0 {
 				fmt.Println("You have no saved bookmarks")
 				return nil
 			}
-			bookmark := args[0]
-			if _, found := store[bookmark]; !found {
-				fmt.Printf("Unable to find bookmark: \"%s\"\n", bookmark)
+			name := args[0]
+			if _, found := bookmarks[name]; !found {
+				fmt.Printf("Unable to find bookmark: \"%s\"\n", name)
 				return nil
 			}
-			bookmarkCmdArr := splitOnSpace(store[bookmark])
+			bookmarkCmdArr := splitOnSpace(bookmarks[name])
 			var command *exec.Cmd
 			cmdAndArgs := bookmarkCmdArr[0]
 			if len(bookmarkCmdArr) > 1 {
@@ -119,23 +118,23 @@ func BookmarkExecCmd() *cobra.Command {
 }
 
 // BookmarkListCmd initializes a new list command.
-func BookmarkListCmd() *cobra.Command {
+func BookmarkListCmd(bs store.BookmarkStoreLoader) *cobra.Command {
 	return &cobra.Command{
 		Use:   "list",
 		Short: "List your current saved bookmarks",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			store, err := loadBookmarkStore()
+			bookmarks, err := bs.Load()
 			if err != nil {
 				return err
 			}
-			if len(store) == 0 {
+			if len(bookmarks) == 0 {
 				fmt.Println("You have no saved bookmarks")
 				return nil
 			}
 			fmt.Println("ID: BOOKMARK: COMMAND")
 			counter := 1
-			for bm, cmd := range store {
+			for bm, cmd := range bookmarks {
 				fmt.Printf("%d: %s: %s\n", counter, bm, cmd)
 				counter += 1
 			}
@@ -145,35 +144,35 @@ func BookmarkListCmd() *cobra.Command {
 }
 
 // BookmarkRemoveCmd initializes a new remove command.
-func BookmarkRemoveCmd() *cobra.Command {
+func BookmarkRemoveCmd(bs store.BookmarkStoreLoadUpdater) *cobra.Command {
 	return &cobra.Command{
 		Use:   "remove",
 		Short: "Remove a bookmark",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			store, err := loadBookmarkStore()
+			bookmarks, err := bs.Load()
 			if err != nil {
 				return err
 			}
-			if len(store) == 0 {
+			if len(bookmarks) == 0 {
 				fmt.Println("You have no saved bookmarks")
 				return nil
 			}
-			bookmark := args[0]
-			if _, found := store[bookmark]; !found {
-				fmt.Printf("Unable to find bookmark: %s\n", bookmark)
+			name := args[0]
+			if _, found := bookmarks[name]; !found {
+				fmt.Printf("Unable to find bookmark: %s\n", name)
 				return nil
 			}
 			var input string
-			fmt.Printf("Are you sure you want to remove \"%s\" (y/N)? ", bookmark)
+			fmt.Printf("Are you sure you want to remove \"%s\" (y/N)? ", name)
 			_, _ = fmt.Scanln(&input)
 			if strings.ToLower(strings.TrimSpace(input)) == "y" {
-				delete(store, bookmark)
-				err := updateStore(store)
+				delete(bookmarks, name)
+				err := bs.Update(bookmarks)
 				if err != nil {
 					return err
 				}
-				fmt.Printf("\"%s\" was removed successfully!\n", bookmark)
+				fmt.Printf("\"%s\" was removed successfully!\n", name)
 			}
 			return nil
 		},
@@ -181,21 +180,21 @@ func BookmarkRemoveCmd() *cobra.Command {
 }
 
 // BookmarkSearchCmd initializes a new search command.
-func BookmarkSearchCmd() *cobra.Command {
+func BookmarkSearchCmd(bs store.BookmarkStoreLoader) *cobra.Command { // <--- Inject Store interface
 	return &cobra.Command{
 		Use:   "search",
 		Short: "seach for a bookmark",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			store, err := loadBookmarkStore()
+			bookmarks, err := bs.Load()
 			if err != nil {
 				return err
 			}
-			if len(store) == 0 {
+			if len(bookmarks) == 0 {
 				fmt.Println("You have no saved bookmarks")
 				return nil
 			}
-			if val, found := store[args[0]]; found {
+			if val, found := bookmarks[args[0]]; found {
 				fmt.Println(val)
 				return nil
 			}
@@ -211,33 +210,6 @@ func init() {
 	rootCmd.AddCommand(bookmarkListCmd)
 	rootCmd.AddCommand(bookmarkRemoveCmd)
 	rootCmd.AddCommand(bookmarkSearchCmd)
-}
-
-// loadBookmarkStore loads the user's bookmarks.
-func loadBookmarkStore() (BookmarkStore, error) {
-	storePath := viper.GetViper().GetString("storePath")
-	if _, err := os.Stat(storePath); errors.Is(err, os.ErrNotExist) {
-		return BookmarkStore{}, nil
-	}
-	store, err := os.ReadFile(storePath)
-	if err != nil {
-		return nil, err
-	}
-	var bookmarks BookmarkStore
-	err = json.Unmarshal(store, &bookmarks)
-	if err != nil {
-		return nil, err
-	}
-	return bookmarks, nil
-}
-
-func updateStore(store BookmarkStore) error {
-	storePath := viper.GetViper().GetString("storePath")
-	b, err := json.Marshal(store)
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(storePath, b, 0666)
 }
 
 func splitOnSpace(s string) []string {
