@@ -20,6 +20,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"sort"
 	"strings"
 
 	"github.com/henrikac/bookmark/internal/store"
@@ -128,10 +129,15 @@ func BookmarkListCmd(bs store.BookmarkStoreLoader) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			keys := make([]string, 0, len(bookmarks))
+			for k := range bookmarks {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
 			cmd.Println("ID: BOOKMARK: COMMAND")
 			counter := 1
-			for bm, c := range bookmarks {
-				cmd.Printf("%d: %s: %s\n", counter, bm, c)
+			for _, k := range keys {
+				cmd.Printf("%d: %s: %s\n", counter, k, bookmarks[k])
 				counter += 1
 			}
 			return nil
