@@ -29,7 +29,7 @@ func NewVersionCmd() *cobra.Command {
 		Use:   "version",
 		Short: "Print the version of bookmark",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("v1.1.2")
+			fmt.Println("v1.1.3")
 		},
 	}
 }
