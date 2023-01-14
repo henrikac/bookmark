@@ -52,9 +52,9 @@ func BookmarkAddCmd(bs store.BookmarkStoreLoadUpdater) *cobra.Command {
 				return err
 			}
 			if val, found := bookmarks[name]; found {
-				fmt.Printf("%s already exists: %s\n", name, val)
+				cmd.Printf("%s already exists: %s\n", name, val)
 				var input string
-				fmt.Printf("Do you want to override it (y/N)? ")
+				cmd.Printf("Do you want to override it (y/N)? ")
 				_, _ = fmt.Scanln(&input)
 				if strings.ToLower(strings.TrimSpace(input)) == "y" {
 					bookmarks[name] = bookmarkCmd
@@ -62,7 +62,7 @@ func BookmarkAddCmd(bs store.BookmarkStoreLoadUpdater) *cobra.Command {
 					if err != nil {
 						return err
 					}
-					fmt.Printf("Bookmark \"%s\" has been updated successfully!\n", name)
+					cmd.Printf("Bookmark \"%s\" has been updated successfully!\n", name)
 				}
 				return nil
 			}
@@ -71,7 +71,7 @@ func BookmarkAddCmd(bs store.BookmarkStoreLoadUpdater) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			fmt.Printf("New bookmark \"%s\" has been added successfully!\n", name)
+			cmd.Printf("New bookmark \"%s\" has been added successfully!\n", name)
 			return nil
 		},
 	}
@@ -89,12 +89,12 @@ func BookmarkExecCmd(bs store.BookmarkStoreLoader) *cobra.Command {
 				return err
 			}
 			if len(bookmarks) == 0 {
-				fmt.Println("You have no saved bookmarks")
+				cmd.Println("You have no saved bookmarks")
 				return nil
 			}
 			name := args[0]
 			if _, found := bookmarks[name]; !found {
-				fmt.Printf("Unable to find bookmark: \"%s\"\n", name)
+				cmd.Printf("Unable to find bookmark: \"%s\"\n", name)
 				return nil
 			}
 			bookmarkCmdArr := splitOnSpace(bookmarks[name])
@@ -128,14 +128,10 @@ func BookmarkListCmd(bs store.BookmarkStoreLoader) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			if len(bookmarks) == 0 {
-				fmt.Println("You have no saved bookmarks")
-				return nil
-			}
-			fmt.Println("ID: BOOKMARK: COMMAND")
+			cmd.Println("ID: BOOKMARK: COMMAND")
 			counter := 1
-			for bm, cmd := range bookmarks {
-				fmt.Printf("%d: %s: %s\n", counter, bm, cmd)
+			for bm, c := range bookmarks {
+				cmd.Printf("%d: %s: %s\n", counter, bm, c)
 				counter += 1
 			}
 			return nil
@@ -155,16 +151,16 @@ func BookmarkRemoveCmd(bs store.BookmarkStoreLoadUpdater) *cobra.Command {
 				return err
 			}
 			if len(bookmarks) == 0 {
-				fmt.Println("You have no saved bookmarks")
+				cmd.Println("You have no saved bookmarks")
 				return nil
 			}
 			name := args[0]
 			if _, found := bookmarks[name]; !found {
-				fmt.Printf("Unable to find bookmark: %s\n", name)
+				cmd.Printf("Unable to find bookmark: \"%s\"\n", name)
 				return nil
 			}
 			var input string
-			fmt.Printf("Are you sure you want to remove \"%s\" (y/N)? ", name)
+			cmd.Printf("Are you sure you want to remove \"%s\" (y/N)? ", name)
 			_, _ = fmt.Scanln(&input)
 			if strings.ToLower(strings.TrimSpace(input)) == "y" {
 				delete(bookmarks, name)
@@ -172,7 +168,7 @@ func BookmarkRemoveCmd(bs store.BookmarkStoreLoadUpdater) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				fmt.Printf("\"%s\" was removed successfully!\n", name)
+				cmd.Printf("\"%s\" was removed successfully!\n", name)
 			}
 			return nil
 		},
@@ -180,7 +176,7 @@ func BookmarkRemoveCmd(bs store.BookmarkStoreLoadUpdater) *cobra.Command {
 }
 
 // BookmarkSearchCmd initializes a new search command.
-func BookmarkSearchCmd(bs store.BookmarkStoreLoader) *cobra.Command { // <--- Inject Store interface
+func BookmarkSearchCmd(bs store.BookmarkStoreLoader) *cobra.Command {
 	return &cobra.Command{
 		Use:   "search",
 		Short: "seach for a bookmark",
@@ -191,14 +187,14 @@ func BookmarkSearchCmd(bs store.BookmarkStoreLoader) *cobra.Command { // <--- In
 				return err
 			}
 			if len(bookmarks) == 0 {
-				fmt.Println("You have no saved bookmarks")
+				cmd.Println("You have no saved bookmarks")
 				return nil
 			}
 			if val, found := bookmarks[args[0]]; found {
-				fmt.Println(val)
+				cmd.Println(val)
 				return nil
 			}
-			fmt.Printf("Unable to find bookmark: %s\n", args[0])
+			cmd.Printf("Unable to find bookmark: \"%s\"\n", args[0])
 			return nil
 		},
 	}
